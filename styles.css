@@ -1,0 +1,46 @@
+.wrapperClass:-moz-full-screen {
+    height: 100%;
+}
+
+.wrapperClass:-webkit-full-screen {
+    height: 100%;
+}
+
+.wrapperClass:-ms-fullscreen {
+    height: 100%;
+}
+
+.wrapperClass:fullscreen {
+    height: 100%;
+}
+
+.wrapperClass {
+    margin-bottom: 10px;
+    width: 100%;
+    height: 700px;
+}
+
+.ol-rotate {
+    top: 3em;
+}
+
+.map {
+    width: 75%;
+    height: 100%;
+    float: left;
+}
+
+.sidepanel {
+    background-color:darkseagreen;
+    width: 25%;
+    height: 100%;
+    float: left;
+}
+
+.sidepanel-title {
+    width: 100%;
+    font-size: 3em;
+    color: white;
+    display: block;
+    text-align: center;
+}
