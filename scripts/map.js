@@ -6,10 +6,14 @@ var map = new ol.Map({
         })
     ],
     view: new ol.View({
-        center: ol.proj.fromLonLat([1.45556, 43.6066686]),
-        zoom: 12
+        projection: 'EPSG:4326',
+        center: [1.45556, 43.6066686],
+        zoom: 12,
+        minZoom: 11,
+        maxZoom: 20
     }),
-		controls: ol.control.defaults().extend([
-        new ol.control.FullScreen()
+    controls: ol.control.defaults().extend([
+        new ol.control.FullScreen(),
+        new ol.control.ScaleLine()
     ])
 });
