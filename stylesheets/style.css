@@ -40,7 +40,8 @@
     flex: 1 25%;
     order: 2;
     /*width: 25%;*/
-    background-color:darkseagreen;
+    background-color:#9fff80;
+    color: white;
 }
 
 .footer {
@@ -50,7 +51,8 @@
 .notAContent {
     height: 50px;
     width: 100%;
-    background-color:aquamarine;
+    background-color:#9fff80;
+    color: white;
     display: flex;
     align-items: center;
     align-content: center;
