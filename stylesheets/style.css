@@ -40,7 +40,7 @@
     flex: 1 25%;
     order: 2;
     /*width: 25%;*/
-    background-color:#9fff80;
+    background-color: rgb(171,221,147);
     color: white;
 }
 
@@ -51,7 +51,7 @@
 .notAContent {
     height: 50px;
     width: 100%;
-    background-color:#ffcc80;
+    background-color: rgb(122,184,92);
     color: white;
     display: flex;
     align-items: center;
