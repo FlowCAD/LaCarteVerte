@@ -1,3 +1,8 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
 .wrapperFlex {
     display: flex; 
     /*Retour à la ligne si plus de place*/
