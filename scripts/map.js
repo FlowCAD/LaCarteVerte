@@ -2,6 +2,7 @@
 /*global ol*/
 "use strict";
 
+/*Déclaratino de la map*/
 var view = new ol.View({
     projection: 'EPSG:4326',
     center: [1.45556, 43.6066686],
@@ -24,6 +25,7 @@ var map = new ol.Map({
     view: view
 });
 
+/*Géolocalisation*/
 var geolocation = new ol.Geolocation({
     projection: view.getProjection()
 });
@@ -32,6 +34,10 @@ var geolocation = new ol.Geolocation({
 function el(id) {
     return document.getElementById(id);
 }
+
+geolocation.on('change', function () {
+    el('accuracy').innerText = geolocation.getAccuracy() + ' mètres';
+});
 
 el('track').addEventListener('change', function () {
     geolocation.setTracking(this.checked);
