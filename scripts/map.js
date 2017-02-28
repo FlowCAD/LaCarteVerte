@@ -2,7 +2,7 @@
 /*global ol*/
 "use strict";
 
-/*Déclaratino de la map*/
+/*Déclaration de la map*/
 var view = new ol.View({
     projection: 'EPSG:4326',
     center: [1.45556, 43.6066686],
@@ -71,6 +71,7 @@ positionFeature.setStyle(new ol.style.Style({
 geolocation.on('change:position', function () {
     var coordinates = geolocation.getPosition();
     positionFeature.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null);
+    view.setCenter(coordinates);
 });
 
 
