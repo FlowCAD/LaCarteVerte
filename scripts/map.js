@@ -25,59 +25,64 @@ var map = new ol.Map({
     view: view
 });
 
-/*Géolocalisation*/
-var geolocation = new ol.Geolocation({
-    projection: view.getProjection()
-});
-
-
 function el(id) {
     return document.getElementById(id);
 }
 
-geolocation.on('change', function () {
-    el('accuracy').innerText = geolocation.getAccuracy() + ' mètres';
-});
+/*Géolocalisation*/
+var accuracyFeature = new ol.Feature(), positionFeature = new ol.Feature(), geolocFeatures;
 
-el('track').addEventListener('change', function () {
-    geolocation.setTracking(this.checked);
-});
-
-geolocation.on('error', function (error) {
-    var info = document.getElementById('info');
-    info.innerHTML = error.message;
-    info.style.display = '';
-});
-
-var accuracyFeature = new ol.Feature();
-geolocation.on('change:accuracyGeometry', function () {
-    accuracyFeature.setGeometry(geolocation.getAccuracyGeometry());
-});
-
-var positionFeature = new ol.Feature();
-positionFeature.setStyle(new ol.style.Style({
-    image: new ol.style.Circle({
-        radius: 6,
-        fill: new ol.style.Fill({
-            color: '#3399CC'
-        }),
-        stroke: new ol.style.Stroke({
-            color: '#fff',
-            width: 2
-        })
-    })
-}));
-
-geolocation.on('change:position', function () {
-    var coordinates = geolocation.getPosition();
-    positionFeature.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null);
-    view.setCenter(coordinates);
-});
-
-
-new ol.layer.Vector({
+geolocFeatures = new ol.layer.Vector({
     map: map,
     source: new ol.source.Vector({
         features: [accuracyFeature, positionFeature]
     })
 });
+
+function geolocOn(geolocCB) {
+    if (geolocCB.checked === true) {
+        var geolocation = new ol.Geolocation({
+            projection: view.getProjection()
+        });
+
+        geolocation.on('change', function () {
+            el('accuracy').innerText = geolocation.getAccuracy() + ' mètres';
+        });
+
+        el('geolocCB').addEventListener('change', function () {
+            geolocation.setTracking(this.checked);
+        });
+
+        geolocation.on('error', function (error) {
+            var info = document.getElementById('info');
+            info.innerHTML = error.message;
+            info.style.display = '';
+        });
+        
+        geolocation.on('change:accuracyGeometry', function () {
+            accuracyFeature.setGeometry(geolocation.getAccuracyGeometry());
+        });
+
+        positionFeature.setStyle(new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 6,
+                fill: new ol.style.Fill({
+                    color: '#3399CC'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#fff',
+                    width: 2
+                })
+            })
+        }));
+
+        geolocation.on('change:position', function () {
+            var coordinates = geolocation.getPosition();
+            positionFeature.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null);
+            view.setCenter(coordinates);
+        });
+    }/* else {
+//        TODO : Retirer les features de géoloc
+        map.removeLayer(geolocFeatures);
+    }*/
+}
