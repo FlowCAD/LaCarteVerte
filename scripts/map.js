@@ -8,7 +8,8 @@ var view = new ol.View({
     center: [1.45556, 43.6066686],
     zoom: 12,
     minZoom: 11,
-    maxZoom: 20
+    maxZoom: 20,
+    maxResolution: 0.703125
 });
 
 var map = new ol.Map({
