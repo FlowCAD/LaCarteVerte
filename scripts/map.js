@@ -1,166 +1,89 @@
 /*jslint node: true*/
-/*global L, zonesLargesBDX, zonesFinesBDX, zonesLargesTLS*/
+/*global ol*/
 "use strict";
 
-// Background layers
-var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZmxvcmlhbmNhZG96IiwiYSI6ImNqMGkzN3ZzYzAwM3MzMm80MDZ6eGQ2bmwifQ.BMmvDcBnXoWT8waOnIKNBg';
-
-var osmAttr = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors', osmUrl = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
-
-var grayscale = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
-    satellite = L.tileLayer(mbUrl, {id: 'mapbox.satellite',   attribution: mbAttr}),
-    streets = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr}),
-    osm = L.tileLayer(osmUrl, {attribution: osmAttr});
-
-
-// Markers
-var mobigisMarker = L.marker([44.805458, -0.559889]).bindPopup("<b>Travail</b><br>Lieu de travail actuel");
-var thalesMarker = L.marker([43.536916, 1.513079]).bindPopup("<b>Travail</b><br>Thalès Service Labège");
-
-
-// Map's properties
-var mymap = L.map('mapId', {
-    center: [44.83688, -0.57129],
+/*Déclaration de la map*/
+var view = new ol.View({
+    projection: 'EPSG:4326',
+    center: [1.45556, 43.6066686],
     zoom: 12,
-    layers: [osm, mobigisMarker, thalesMarker]
+    minZoom: 11,
+    maxZoom: 20,
+    maxResolution: 0.703125
 });
 
+var map = new ol.Map({
+    target: 'map',
+    layers: [
+        new ol.layer.Tile({
+            source: new ol.source.OSM()
+        })
+    ],
+    controls: ol.control.defaults().extend([
+        new ol.control.FullScreen(),
+        new ol.control.ScaleLine()
+    ]),
+    view: view
+});
 
-// Styles
-var zonesFinesStyle = {
-    "color": "#ff7800",
-    "weight": 5,
-    "opacity": 0.65
-};
-
-var zonesLargesStyle = {
-    "color": "#0000FF",
-    "weight": 5,
-    "opacity": 0.35
-};
-
-
-// JSONs
-var zonesLargesBDXJson = L.geoJson(
-    zonesLargesBDX,
-    {
-        style: zonesLargesStyle,
-        onEachFeature: function (feature, layer) {
-            layer.bindPopup("<b>" + feature.properties.NOMCOMMUNE + " (" + feature.properties.CODEINSEE + ")</b><br />Population : " + feature.properties.POPULATION + " personnes<br />Date de recensement : " + feature.properties.DATERECENS);
-        }
-    }
-).addTo(mymap);
-
-var zonesFinesBDXJson = L.geoJson(
-    zonesFinesBDX,
-    {
-        style: zonesFinesStyle,
-        onEachFeature: function (feature, layer) {
-    		layer.bindPopup("<b>" + feature.properties.NOMCOMMUNE + " (" + feature.properties.CODEINSEE + ")</b><br />Commentaire : " + feature.properties.COMMENT);
-        }
-    }
-).addTo(mymap);
-
-var zonesLargesTLSJson = L.geoJson(
-    zonesLargesTLS,
-    {
-        style: zonesLargesStyle,
-        onEachFeature: function (feature, layer) {
-            layer.bindPopup("<b> Quartier : " + feature.properties.libelle_du + "</b>");
-        }
-    }
-).addTo(mymap);
-
-// Basemaps for control
-var baseMaps = {
-    "OpenStreetMap": osm,
-    "Plan gris": grayscale,
-    "Plan": streets,
-    "Satellite": satellite
-};
-
-// Layers for control
-var overlayMaps = {
-    "MobiGIS Bègles": mobigisMarker,
-    "Zones Larges Bordeaux": zonesLargesBDXJson,
-    "Zones Fines Bordeaux": zonesFinesBDXJson
-};
-
-
-// Controler
-//L.control.layers(baseMaps, overlayMaps).addTo(mymap);
-var lcontrol = L.control.layers(baseMaps, overlayMaps).addTo(mymap);
-
-
-// Geocorder OpenStreetMap
-new L.Control.GeoSearch({
-    provider: new L.GeoSearch.Provider.OpenStreetMap(),
-    retainZoomLevel: false,
-    showMarker: true
-}).addTo(mymap);
-
-
-// Removing data
-var removeData = function (layerToRemove) {
-    mymap.removeLayer(layerToRemove);
-    lcontrol.removeLayer(layerToRemove);
-};
-
-
-// Adding data
-var addingData = function (layerToAdd, layerNameToAdd) {
-    mymap.addLayer(layerToAdd);
-    lcontrol.addOverlay(layerToAdd, layerNameToAdd);
-};
-
-
-// Pan to another city
-var cityToChoose = document.forms.cityChoiceForm.elements.city;
-
-cityToChoose[0].onclick = function () {
-    console.log("Bordeaux");
-    mymap.setView(
-        new L.LatLng(44.83688, -0.57129),
-        12,
-        {
-            animate: true
-        }
-    );
-    removeData(thalesMarker);
-    removeData(zonesLargesTLSJson);
-    addingData(mobigisMarker, "MobiGIS Bègles");
-    addingData(zonesFinesBDXJson, "Zones Fines Bordeaux");
-    addingData(zonesLargesBDXJson, "Zones Larges Bordeaux");
-};
-
-cityToChoose[1].onclick = function () {
-    console.log("Toulouse");
-    mymap.setView(
-        new L.LatLng(43.599560, 1.441079),
-        12,
-        {
-            animate: true
-        }
-    );
-    removeData(mobigisMarker);
-    removeData(zonesFinesBDXJson);
-    removeData(zonesLargesBDXJson);
-    addingData(thalesMarker, "Thalès Service Labège");
-    addingData(zonesLargesTLSJson, "Zones Larges Toulouse");
-};
-
-
-// Event on the map
-/*var popup = L.popup();
-
-function onMapClick(e) {
-    popup
-        .setLatLng(e.latlng)
-        .setContent("Ici, les coordonnées sont : " + e.latlng.toString())
-        .openOn(mymap);
+function el(id) {
+    return document.getElementById(id);
 }
 
-mymap.on('click', onMapClick);*/
+/*Géolocalisation*/
+var accuracyFeature = new ol.Feature(), positionFeature = new ol.Feature(), geolocFeatures;
+
+geolocFeatures = new ol.layer.Vector({
+    map: map,
+    source: new ol.source.Vector({
+        features: [accuracyFeature, positionFeature]
+    })
+});
+
+function geolocOn(geolocCB) {
+    if (geolocCB.checked === true) {
+        var geolocation = new ol.Geolocation({
+            projection: view.getProjection()
+        });
+
+        geolocation.on('change', function () {
+            el('accuracy').innerText = geolocation.getAccuracy() + ' mètres';
+        });
+
+        el('geolocCB').addEventListener('change', function () {
+            geolocation.setTracking(this.checked);
+        });
+
+        geolocation.on('error', function (error) {
+            var info = document.getElementById('info');
+            info.innerHTML = error.message;
+            info.style.display = '';
+        });
+        
+        geolocation.on('change:accuracyGeometry', function () {
+            accuracyFeature.setGeometry(geolocation.getAccuracyGeometry());
+        });
+
+        positionFeature.setStyle(new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 6,
+                fill: new ol.style.Fill({
+                    color: '#3399CC'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#fff',
+                    width: 2
+                })
+            })
+        }));
+
+        geolocation.on('change:position', function () {
+            var coordinates = geolocation.getPosition();
+            positionFeature.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null);
+            view.setCenter(coordinates);
+        });
+    }/* else {
+//        TODO : Retirer les features de géoloc
+        map.removeLayer(geolocFeatures);
+    }*/
+}
